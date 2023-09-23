@@ -13,6 +13,7 @@ export default function Home() {
   const [locationHistory, setLocationHistory] = useState<
     { time: string; lat: number; lng: number }[]
   >([]);
+  const [isTableVisible, setTableVisible] = useState(false);
 
   useEffect(() => {
     const storedTagNames = localStorage.getItem("tagNames");
@@ -73,10 +74,18 @@ export default function Home() {
           </button>
         </form>
       </div>
+      <button
+        onClick={() => setTableVisible(!isTableVisible)}
+        className="mt-4 p-2 bg-blue-500 text-white rounded"
+      >
+        {isTableVisible ? "Hide" : "Show"} Location History
+      </button>
       {locationHistory.length > 0 && (
         <>
-          <LocationHistoryTable locationHistory={locationHistory} />
           <MapComponent points={locationHistory} />
+          {isTableVisible && (
+            <LocationHistoryTable locationHistory={locationHistory} />
+          )}
         </>
       )}
     </div>
