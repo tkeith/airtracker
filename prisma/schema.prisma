@@ -1,0 +1,30 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model Tag {
+  id          Int                   @id @default(autoincrement())
+  name        String                @unique
+  addedAt     DateTime              @default(now())
+  lastUpdated DateTime              @updatedAt
+  snapshots   TagLocationSnapshot[]
+}
+
+model TagLocationSnapshot {
+  id           Int      @id @default(autoincrement())
+  tagId        Int
+  tag          Tag      @relation(fields: [tagId], references: [id])
+  lat          Int
+  lon          Int
+  encryptedLat Int
+  encryptedLon Int
+  time         DateTime @default(now())
+}
