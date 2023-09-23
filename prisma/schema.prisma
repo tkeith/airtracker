@@ -14,7 +14,7 @@ model Tag {
   id          Int                   @id @default(autoincrement())
   name        String                @unique
   addedAt     DateTime              @default(now())
-  lastUpdated DateTime              @updatedAt
+  lastUpdated DateTime
   snapshots   TagLocationSnapshot[]
 }
 
