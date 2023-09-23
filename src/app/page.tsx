@@ -74,12 +74,6 @@ export default function Home() {
           </button>
         </form>
       </div>
-      <button
-        onClick={() => setTableVisible(!isTableVisible)}
-        className="mt-4 p-2 bg-blue-500 text-white rounded"
-      >
-        {isTableVisible ? "Hide" : "Show"} Location History
-      </button>
       {locationHistory.length > 0 && (
         <>
           <MapComponent points={locationHistory} />
@@ -88,6 +82,12 @@ export default function Home() {
           )}
         </>
       )}
+      <button
+        onClick={() => setTableVisible(!isTableVisible)}
+        className="mt-4 p-2 bg-gray-500 text-white rounded"
+      >
+        {isTableVisible ? "Hide" : "Show"} Location History
+      </button>
     </div>
   );
 }

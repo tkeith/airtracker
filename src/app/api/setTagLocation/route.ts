@@ -15,15 +15,26 @@ export async function POST(request: Request) {
     create: { name: name, lastUpdated: new Date() },
   });
 
-  await prisma.tagLocationSnapshot.create({
-    data: {
-      lat: lat,
-      lon: lon,
-      encryptedLat: encryptedLat,
-      encryptedLon: encryptedLon,
-      tagId: tag.id,
-    },
+  const latestSnapshot = await prisma.tagLocationSnapshot.findFirst({
+    where: { tagId: tag.id },
+    orderBy: { time: "desc" },
   });
+
+  if (
+    !latestSnapshot ||
+    Math.abs(lat - latestSnapshot.lat) > 400 ||
+    Math.abs(lon - latestSnapshot.lon) > 400
+  ) {
+    await prisma.tagLocationSnapshot.create({
+      data: {
+        lat: lat,
+        lon: lon,
+        encryptedLat: encryptedLat,
+        encryptedLon: encryptedLon,
+        tagId: tag.id,
+      },
+    });
+  }
 
   return NextResponse.json({ status: "success" });
 }
