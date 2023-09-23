@@ -14,7 +14,7 @@ export async function GET(req: Request) {
   });
 
   if (!tag) {
-    return NextResponse.json({ error: "Tag not found" });
+    return NextResponse.json({ snapshots: [] });
   }
 
   const snapshots = await prisma.tagLocationSnapshot.findMany({

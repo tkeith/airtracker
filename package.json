@@ -10,6 +10,7 @@
     "macWorker": "ts-node -r tsconfig-paths/register src/macWorker.ts"
   },
   "dependencies": {
+    "@googlemaps/js-api-loader": "^1.16.2",
     "@prisma/client": "^5.3.1",
     "@types/node": "20.6.3",
     "@types/react": "18.2.22",
@@ -26,5 +27,8 @@
     "ts-node": "^10.9.1",
     "tsconfig-paths": "^4.2.0",
     "typescript": "5.2.2"
+  },
+  "devDependencies": {
+    "@types/google.maps": "^3.54.1"
   }
 }
