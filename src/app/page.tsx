@@ -74,20 +74,26 @@ export default function Home() {
           </button>
         </form>
       </div>
-      {locationHistory.length > 0 && (
+      {selectedTagName && locationHistory.length > 0 ? (
         <>
           <MapComponent points={locationHistory} />
           {isTableVisible && (
             <LocationHistoryTable locationHistory={locationHistory} />
           )}
         </>
+      ) : selectedTagName ? (
+        <div className="mt-4 p-4 bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative" role="alert">
+          <strong className="font-bold">No location data for this tag.</strong>
+        </div>
+      ) : null}
+      {selectedTagName && (
+        <button
+          onClick={() => setTableVisible(!isTableVisible)}
+          className="mt-4 p-2 bg-gray-500 text-white rounded"
+        >
+          {isTableVisible ? "Hide" : "Show"} Location History
+        </button>
       )}
-      <button
-        onClick={() => setTableVisible(!isTableVisible)}
-        className="mt-4 p-2 bg-gray-500 text-white rounded"
-      >
-        {isTableVisible ? "Hide" : "Show"} Location History
-      </button>
     </div>
   );
 }
