@@ -19,10 +19,14 @@ export default function MapComponent({ points }: MapComponentProps) {
         zoom: 15,
       });
 
-      points.forEach((point) => {
+      points.forEach((point, index) => {
         new google.maps.Marker({
           position: point,
           map,
+          icon:
+            index === 0
+              ? "http://maps.google.com/mapfiles/ms/icons/red-dot.png"
+              : "http://maps.google.com/mapfiles/ms/icons/red.png",
         });
       });
 
@@ -37,5 +41,5 @@ export default function MapComponent({ points }: MapComponentProps) {
     });
   }, [points]);
 
-  return <div id="map" style={{ width: "100%", height: "400px" }} />;
+  return <div id="map" style={{ width: "100%", height: "600px" }} />;
 }
