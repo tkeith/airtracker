@@ -32,10 +32,10 @@ export async function POST(request: Request) {
 
   if (
     !latestSnapshot ||
-    Math.abs(lat - latestSnapshot.lat) > 600 ||
-    Math.abs(lon - latestSnapshot.lon) > 600
+    Math.abs(lat - latestSnapshot.lat) > 1200 ||
+    Math.abs(lon - latestSnapshot.lon) > 1200
   ) {
-    console.log(`\n\nNew snapshot for ${name} at ${lat}, ${lon}\n`);
+    console.log(`\n\n${name} has moved to new location ${lat}, ${lon}\n`);
     await prisma.tagLocationSnapshot.create({
       data: {
         lat: lat,
@@ -79,19 +79,28 @@ export async function POST(request: Request) {
     const beforeFirstSpace = name.split(" ")[0];
     const afterFirstSpace = name.split(" ").slice(1).join(" ").trim();
 
+    // await sendMessage(
+    //   beforeFirstSpace,
+    //   `Your tag${
+    //     afterFirstSpace ? " " + afterFirstSpace : ""
+    //   } has moved to ${intToFloat(lat)}, ${intToFloat(
+    //     lon
+    //   )} - details: ${ipfsUrl}`
+    // );
+
     await sendMessage(
       beforeFirstSpace,
-      `Your tag${
-        afterFirstSpace ? " " + afterFirstSpace : ""
-      } has moved to ${intToFloat(lat)}, ${intToFloat(
+      `Your tag ${name} has moved to ${intToFloat(lat)}, ${intToFloat(
         lon
       )} - details: ${ipfsUrl}`
     );
 
     const tokenId = hashKey(name);
 
+    console.log("Publishing on-chain update...");
+
     for (const chainKey of Object.keys(CHAINS)) {
-      console.log(`Pushing to chain ${chainKey}`);
+      // console.log(`Pushing to chain ${chainKey}`);
 
       const chain = CHAINS[chainKey]!;
 
@@ -111,11 +120,13 @@ export async function POST(request: Request) {
           tokenId
         );
         // console.log("mintOrUpdateTx ", mintOrUpdateTx);
-        console.log(`Transaction hash: ${mintOrUpdateTx.hash}`);
+        // console.log(`Transaction hash: ${mintOrUpdateTx.hash}`);
       } catch (error) {
+        console.log(`Chain: ${chainKey}`);
         console.log("error ", error);
       }
     }
+    console.log("Done publishing on-chain update");
   }
 
   return NextResponse.json({ status: "success" });

@@ -25,6 +25,7 @@ export default function Home() {
 
   const handleSubmit = async (name: string) => {
     setIsLoading(true);
+    setTableVisible(false);
     setSelectedTagName(name);
     if (!tagNames.includes(name)) {
       const updatedTagNames = [...tagNames, name];
@@ -64,7 +65,7 @@ export default function Home() {
         ))}
         <form
           onSubmit={handleFormSubmit}
-          className="flex items-center justify-center ml-2"
+          className="flex items-center justify-center m-2"
         >
           <input
             type="text"
@@ -81,7 +82,10 @@ export default function Home() {
       <hr className="w-full mb-4 border-t-2 border-gray-200" />
 
       {!isLoading && !selectedTagName ? (
-        <div className="mt-4 p-4 bg-blue-100 border border-blue-400 text-blue-700 px-4 py-3 rounded relative" role="alert">
+        <div
+          className="mt-4 p-4 bg-blue-100 border border-blue-400 text-blue-700 px-4 py-3 rounded relative"
+          role="alert"
+        >
           <strong className="font-bold">Select a tag above</strong>
         </div>
       ) : null}

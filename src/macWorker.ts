@@ -60,7 +60,7 @@ async function main() {
     }
 
     // Wait for 1 minute
-    await new Promise((resolve) => setTimeout(resolve, 60 * 1000));
+    await new Promise((resolve) => setTimeout(resolve, 1000));
   }
 }
 

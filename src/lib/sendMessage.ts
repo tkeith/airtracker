@@ -3,11 +3,12 @@ import { Wallet } from "ethers";
 import { airstackLookup } from "./airstackLookup";
 
 export async function sendMessage(to: string, body: string) {
+  console.log("Sending message to " + to + ": " + body);
   const wallet = new Wallet(process.env.WALLET_PRIVATE_KEY!);
-  console.log("Wallet address: " + wallet.address);
+  // console.log("Wallet address: " + wallet.address);
 
   const xmtp = await Client.create(wallet, { env: "production" });
-  console.log("Client created", xmtp.address);
+  // console.log("Client created", xmtp.address);
 
   const toWalletAddress = (await airstackLookup(to)) || to;
   const isOnProdNetwork = await xmtp.canMessage(toWalletAddress);
@@ -16,8 +17,8 @@ export async function sendMessage(to: string, body: string) {
     const conversation = await xmtp.conversations.newConversation(
       toWalletAddress
     );
-    console.log("Conversation created", conversation);
+    // console.log("Conversation created", conversation);
     const message = await conversation.send(body);
-    console.log("Message sent", message);
+    // console.log("Message sent", message);
   }
 }
