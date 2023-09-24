@@ -8,6 +8,7 @@ import Web3 from "web3";
 import { hashKey } from "../../../lib/hashKey";
 import AirTracker from "../../../AirTracker.json";
 import { JsonRpcProvider, Wallet, Contract } from "ethers";
+import { sendMessage } from "@/lib/sendMessage";
 
 // const web3 = new Web3(RPC_URL);
 // const contract = new web3.eth.Contract(AirTracker.abi, CONTRACT_ADDRESS);
@@ -70,7 +71,22 @@ export async function POST(request: Request) {
     const cid = await storage.put([file]);
 
     console.log(`Stored file with CID: ${cid}`);
-    console.log(`https://dweb.link/ipfs/${cid}`);
+
+    const ipfsUrl = `https://ipfs.io/ipfs/${cid}`;
+    console.log(ipfsUrl);
+
+    // split tag name into beforeFirstSpace and afterFirstSpace (but afterFirstSpace may include more spaces)
+    const beforeFirstSpace = name.split(" ")[0];
+    const afterFirstSpace = name.split(" ").slice(1).join(" ").trim();
+
+    await sendMessage(
+      beforeFirstSpace,
+      `Your tag${
+        afterFirstSpace ? " " + afterFirstSpace : ""
+      } has moved to ${intToFloat(lat)}, ${intToFloat(
+        lon
+      )} - details: ${ipfsUrl}`
+    );
 
     const tokenId = hashKey(name);
 
