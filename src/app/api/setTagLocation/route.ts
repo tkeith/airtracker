@@ -50,83 +50,88 @@ export async function POST(request: Request) {
       where: { tagId: tag.id },
     });
 
-    const storage = new Web3Storage({ token: WEB3_STORAGE_TOKEN });
-    const metadata = {
-      name: `${tag.name}_location_history.json`,
-      type: "application/json",
-    };
-    const file = new File(
-      [
-        JSON.stringify(
-          historicalLocations.map((snapshot) => ({
-            time: snapshot.time,
-            encryptedLat: snapshot.encryptedLat,
-            encryptedLon: snapshot.encryptedLon,
-          }))
-        ),
-      ],
-      metadata.name,
-      metadata
-    );
-    const cid = await storage.put([file]);
+    try {
+      const storage = new Web3Storage({ token: WEB3_STORAGE_TOKEN });
+      const metadata = {
+        name: `${tag.name}_location_history.json`,
+        type: "application/json",
+      };
+      const file = new File(
+        [
+          JSON.stringify(
+            historicalLocations.map((snapshot) => ({
+              time: snapshot.time,
+              encryptedLat: snapshot.encryptedLat,
+              encryptedLon: snapshot.encryptedLon,
+            }))
+          ),
+        ],
+        metadata.name,
+        metadata
+      );
+      const cid = await storage.put([file]);
 
-    console.log(`Stored file with CID: ${cid}`);
+      console.log(`Stored file with CID: ${cid}`);
 
-    const ipfsUrl = `https://ipfs.io/ipfs/${cid}`;
-    console.log(ipfsUrl);
+      const ipfsUrl = `https://ipfs.io/ipfs/${cid}`;
+      console.log(ipfsUrl);
 
-    // split tag name into beforeFirstSpace and afterFirstSpace (but afterFirstSpace may include more spaces)
-    const beforeFirstSpace = name.split(" ")[0];
-    const afterFirstSpace = name.split(" ").slice(1).join(" ").trim();
+      // split tag name into beforeFirstSpace and afterFirstSpace (but afterFirstSpace may include more spaces)
+      const beforeFirstSpace = name.split(" ")[0];
+      const afterFirstSpace = name.split(" ").slice(1).join(" ").trim();
 
-    // await sendMessage(
-    //   beforeFirstSpace,
-    //   `Your tag${
-    //     afterFirstSpace ? " " + afterFirstSpace : ""
-    //   } has moved to ${intToFloat(lat)}, ${intToFloat(
-    //     lon
-    //   )} - details: ${ipfsUrl}`
-    // );
+      // await sendMessage(
+      //   beforeFirstSpace,
+      //   `Your tag${
+      //     afterFirstSpace ? " " + afterFirstSpace : ""
+      //   } has moved to ${intToFloat(lat)}, ${intToFloat(
+      //     lon
+      //   )} - details: ${ipfsUrl}`
+      // );
 
-    await sendMessage(
-      beforeFirstSpace,
-      `Your tag ${name} has moved to ${intToFloat(lat)}, ${intToFloat(
-        lon
-      )} - details: ${ipfsUrl}`
-    );
+      await sendMessage(
+        beforeFirstSpace,
+        `Your tag ${name} has moved to ${intToFloat(lat)}, ${intToFloat(
+          lon
+        )} - details: ${ipfsUrl}`
+      );
 
-    const tokenId = hashKey(name);
+      const tokenId = hashKey(name);
 
-    console.log("Publishing on-chain update...");
+      console.log("Publishing on-chain update...");
 
-    for (const chainKey of Object.keys(CHAINS)) {
-      // console.log(`Pushing to chain ${chainKey}`);
+      for (const chainKey of Object.keys(CHAINS)) {
+        // console.log(`Pushing to chain ${chainKey}`);
 
-      const chain = CHAINS[chainKey]!;
+        const chain = CHAINS[chainKey]!;
 
-      try {
-        const provider = new JsonRpcProvider(chain.rpc);
-        // Load the wallet to deploy the contract with
-        const privateKey = process.env.WALLET_PRIVATE_KEY!;
-        const wallet = new Wallet(privateKey, provider);
+        try {
+          const provider = new JsonRpcProvider(chain.rpc);
+          // Load the wallet to deploy the contract with
+          const privateKey = process.env.WALLET_PRIVATE_KEY!;
+          const wallet = new Wallet(privateKey, provider);
 
-        var contract = new Contract(chain.contract, AirTracker.abi, wallet);
+          var contract = new Contract(chain.contract, AirTracker.abi, wallet);
 
-        // @ts-ignore
-        const mintOrUpdateTx = await contract.mintOrUpdate(
-          encryptedLat,
-          encryptedLon,
-          cid,
-          tokenId
-        );
-        // console.log("mintOrUpdateTx ", mintOrUpdateTx);
-        // console.log(`Transaction hash: ${mintOrUpdateTx.hash}`);
-      } catch (error) {
-        console.log(`Chain: ${chainKey}`);
-        console.log("error ", error);
+          // @ts-ignore
+          const mintOrUpdateTx = await contract.mintOrUpdate(
+            encryptedLat,
+            encryptedLon,
+            cid,
+            tokenId
+          );
+          // console.log("mintOrUpdateTx ", mintOrUpdateTx);
+          // console.log(`Transaction hash: ${mintOrUpdateTx.hash}`);
+        } catch (error) {
+          console.log(`Chain: ${chainKey}`);
+          console.log("error ", error);
+        }
       }
+      console.log("Done publishing on-chain update");
+    } catch (e) {
+      console.log("error", e);
+      return NextResponse.json({ status: "error" });
     }
-    console.log("Done publishing on-chain update");
   }
 
   return NextResponse.json({ status: "success" });
