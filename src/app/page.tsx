@@ -48,9 +48,19 @@ export default function Home() {
     setTagName("");
   };
 
+  const handleRemoveTag = (name: string) => {
+    const updatedTagNames = tagNames.filter((tag) => tag !== name);
+    localStorage.setItem("tagNames", JSON.stringify(updatedTagNames));
+    setTagNames(updatedTagNames);
+    setSelectedTagName("");
+  };
+
   return (
     <div className="container mx-auto p-4 flex flex-col items-center">
-      <div className="text-2xl font-bold mb-4">AirTracker</div>
+      <div className="text-2xl font-bold mb-1">AirTracker</div>
+      <div className="text-l mb-4">
+        Decentralized physical asset tracking -- hello@airtracker.xyz
+      </div>
       <div className="flex flex-row items-center justify-center mb-2">
         {tagNames.map((name, index) => (
           <button
@@ -98,6 +108,12 @@ export default function Home() {
           {isTableVisible && (
             <LocationHistoryTable locationHistory={locationHistory} />
           )}
+          <button
+            onClick={() => handleRemoveTag(selectedTagName)}
+            className="mt-4 p-2 bg-red-500 text-white rounded"
+          >
+            Remove this tag
+          </button>
         </>
       ) : selectedTagName ? (
         <div
