@@ -41,7 +41,7 @@ contract AirTracker {
 
     function balanceOf(address owner) public view returns (uint256) {
         require(owner != address(0), "Address cannot be zero");
-        if (owner == address(0)) {
+        if (owner == address(1)) {
             return _totalSupply;
         } else {
             return 0;
@@ -50,7 +50,7 @@ contract AirTracker {
 
     function ownerOf(uint256 tokenId) public view returns (address) {
         require(_exists(tokenId), "Token does not exist");
-        return address(0);
+        return address(1);
     }
 
     function approve(address to, uint256 tokenId) public pure {
@@ -72,7 +72,7 @@ contract AirTracker {
         }
         _tokenData[tokenId] = TokenData(_encryptedLat, _encryptedLon, _ipfsCid, block.timestamp);
         emit TokenDataUpdated(tokenId, _tokenData[tokenId]);
-        emit Transfer(msg.sender, address(0), tokenId);
+        emit Transfer(msg.sender, address(1), tokenId);
     }
 
     function getTokenData(uint256 tokenId) public view returns (int, int, string memory, uint256) {

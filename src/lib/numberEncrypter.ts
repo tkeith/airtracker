@@ -1,11 +1,4 @@
-function hashKey(key: string): number {
-  let hash = 0;
-  for (let i = 0; i < key.length; i++) {
-    hash = (hash << 5) - hash + key.charCodeAt(i);
-    hash |= 0; // Convert to 32-bit integer
-  }
-  return hash;
-}
+import { hashKey } from "./hashKey";
 
 export function encrypt(num: number, key: string): number {
   const keyHash = hashKey(key);
