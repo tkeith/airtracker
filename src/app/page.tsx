@@ -14,6 +14,7 @@ export default function Home() {
     { time: string; lat: number; lng: number }[]
   >([]);
   const [isTableVisible, setTableVisible] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
     const storedTagNames = localStorage.getItem("tagNames");
@@ -23,6 +24,7 @@ export default function Home() {
   }, []);
 
   const handleSubmit = async (name: string) => {
+    setIsLoading(true);
     setSelectedTagName(name);
     if (!tagNames.includes(name)) {
       const updatedTagNames = [...tagNames, name];
@@ -36,6 +38,7 @@ export default function Home() {
       lng: intToFloat(snapshot.lon),
     }));
     setLocationHistory(convertedSnapshots);
+    setIsLoading(false);
   };
 
   const handleFormSubmit = (event: any) => {
@@ -46,7 +49,8 @@ export default function Home() {
 
   return (
     <div className="container mx-auto p-4 flex flex-col items-center">
-      <div className="flex flex-row items-center justify-center mt-12">
+      <div className="text-2xl font-bold mb-4">AirTracker</div>
+      <div className="flex flex-row items-center justify-center mb-2">
         {tagNames.map((name, index) => (
           <button
             key={index}
@@ -74,7 +78,17 @@ export default function Home() {
           </button>
         </form>
       </div>
-      {selectedTagName && locationHistory.length > 0 ? (
+      <hr className="w-full mb-4 border-t-2 border-gray-200" />
+
+      {!isLoading && !selectedTagName ? (
+        <div className="mt-4 p-4 bg-blue-100 border border-blue-400 text-blue-700 px-4 py-3 rounded relative" role="alert">
+          <strong className="font-bold">Select a tag above</strong>
+        </div>
+      ) : null}
+
+      {isLoading ? (
+        <div className="text-lg font-bold">Loading...</div>
+      ) : selectedTagName && locationHistory.length > 0 ? (
         <>
           <MapComponent points={locationHistory} />
           {isTableVisible && (
@@ -82,7 +96,10 @@ export default function Home() {
           )}
         </>
       ) : selectedTagName ? (
-        <div className="mt-4 p-4 bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative" role="alert">
+        <div
+          className="mt-4 p-4 bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative"
+          role="alert"
+        >
           <strong className="font-bold">No location data for this tag.</strong>
         </div>
       ) : null}

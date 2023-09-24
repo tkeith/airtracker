@@ -24,8 +24,8 @@ export async function POST(request: Request) {
 
   if (
     !latestSnapshot ||
-    Math.abs(lat - latestSnapshot.lat) > 400 ||
-    Math.abs(lon - latestSnapshot.lon) > 400
+    Math.abs(lat - latestSnapshot.lat) > 600 ||
+    Math.abs(lon - latestSnapshot.lon) > 600
   ) {
     await prisma.tagLocationSnapshot.create({
       data: {
