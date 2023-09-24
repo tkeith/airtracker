@@ -63,7 +63,9 @@ export async function POST(request: Request) {
               time: snapshot.time,
               encryptedLat: snapshot.encryptedLat,
               encryptedLon: snapshot.encryptedLon,
-            }))
+            })),
+            null,
+            2
           ),
         ],
         metadata.name,
